@@ -35,11 +35,12 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
-        mavenRepo "http://repository.codehaus.org"
+        //mavenRepo "http://repository.jboss.com/maven2/"
     }
 
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
+		compile 'org.codehaus.groovy:groovy-all:2.2.1'
 		compile "org.codehaus.groovy.modules.http-builder:http-builder:0.6"
         // runtime 'mysql:mysql-connector-java:5.1.22'
     }
