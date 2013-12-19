@@ -12,6 +12,7 @@ class Product {
 	String name
 	String image
 	String mediumImage
+	String largeImage
 	String modelNumber
 	String shortDescription
 	String url
