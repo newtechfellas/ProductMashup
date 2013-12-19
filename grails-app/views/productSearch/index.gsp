@@ -96,14 +96,16 @@
 		<div id="page-body" role="main">
 			<h1>Search for products</h1>
 			<g:form action="search">
-				<fieldset class="form">
-				<g:textField size="60" name="searchText" value="Enter Your Search Criteria"/><g:submitButton name="Search"/>
-				<label for="BestBuy">BestBuy</label><g:checkBox name="BestBuy"/>
-				<label for="Amazon">Amazon</label><g:checkBox name="Amazon"/>
-				<label for="Walmart">Walmart</label><g:checkBox name="Walmart"/>
-				
-			   </fieldset>
-			</g:form>
+                <fieldset class="form">
+                    <div>
+                    <g:textField size="60" name="searchQuery" value="Enter Your Search Criteria"/><g:submitButton style="float:right" name="Search"/>
+                    </div>
+                <g:checkBox name="bestBuy"/><label for="bestBuy">BestBuy</label>
+                <g:checkBox name="amazon"/><label for="amazon">Amazon</label>
+                <g:checkBox name="walmart"/><label for="walmart">Walmart</label>
+               
+               </fieldset>
+            </g:form>
 		</div>
 	</body>
 </html>

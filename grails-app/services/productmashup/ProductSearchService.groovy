@@ -9,7 +9,12 @@ package productmashup
  */
 class ProductSearchService {
 
-    def serviceMethod() {
-
-    }
+	BestBuySearchService bestBuySearchService
+	
+		def searchProducts(ProductSearchCriteriaVO searchCriteriaVO) {
+			List searchResults = []
+			if ( searchCriteriaVO.bestBuy) {
+				searchResults << bestBuySearchService.searchProducts(searchCriteriaVO)
+			}
+		}
 }
