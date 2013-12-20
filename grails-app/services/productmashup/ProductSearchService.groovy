@@ -12,9 +12,8 @@ class ProductSearchService {
 	BestBuySearchService bestBuySearchService
 	
 		def searchProducts(ProductSearchCriteriaVO searchCriteriaVO) {
-			List searchResults = []
 			if ( searchCriteriaVO.bestBuy) {
-				searchResults << bestBuySearchService.searchProducts(searchCriteriaVO)
+				bestBuySearchService.searchProducts(searchCriteriaVO)
 			}
 		}
 }
