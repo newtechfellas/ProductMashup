@@ -30,7 +30,7 @@ class BestBuySearchService {
     }
 
     def constructRestURI(ProductSearchCriteriaVO productSearchCriteriaVO) {
-        def uri = bbyOpenQueryPrefix+"(search=$productSearchCriteriaVO.searchQuery)?format=json&apiKey="+getAPIKey()+"&show=$interestedDataFieldsInResponse&sort=salePrice.desc"
+        def uri = bbyOpenQueryPrefix+"(search=$productSearchCriteriaVO.searchQuery)?format=json&apiKey="+getAPIKey()+"&show=$interestedDataFieldsInResponse&sort=salePrice.asc"
         // There seems to be a bug in Groovy Rest client support. If URI contains white space characters, encoding fails with "illegal" character exception.
         // Issue still persists even after applying the fix mentioned in "http://groovy.329449.n5.nabble.com/RestClient-Escape-URL-encoding-td3448030.html"
         // A workaround to replace all white space characters with "%20" is used instead.

@@ -1,5 +1,8 @@
 package productmashup
 
+import grails.validation.Validateable;
+
+@Validateable
 class ProductSearchCriteriaVO {
 	String searchQuery
 	boolean bestBuy

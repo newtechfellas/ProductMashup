@@ -33,6 +33,7 @@
         font-size: 15px;
         font-weight: bold;
         line-height: 1.5;
+        display: block;
     }
    
 </style>
@@ -54,7 +55,7 @@
                     Sale Price : ${product.salePrice}
                 </g:else>
             </span>
-            <a href="${product.url}">More details on BestBuy</a>
+            <a href="${product.url}" target="_blank">More details on BestBuy</a>
         </div>
         <div class="productImage">
             <a href="${product.url}">
@@ -67,7 +68,6 @@
                 <g:elseif test="${product.image}">
                     <img alt='"${product.name}"' src="${product.image}">
                 </g:elseif>
-
             </a>
         </div>
     </div>
