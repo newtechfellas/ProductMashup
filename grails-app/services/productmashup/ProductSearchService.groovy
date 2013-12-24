@@ -11,9 +11,9 @@ class ProductSearchService {
 
 	BestBuySearchService bestBuySearchService
 	
-		def searchProducts(ProductSearchCriteriaVO searchCriteriaVO) {
-			if ( searchCriteriaVO.bestBuy) {
-				bestBuySearchService.searchProducts(searchCriteriaVO)
-			}
+	Map searchProducts(ProductSearchCriteriaVO searchCriteriaVO) {
+		if ( searchCriteriaVO.bestBuy) {
+			bestBuySearchService.searchProducts(searchCriteriaVO)
 		}
+	}
 }

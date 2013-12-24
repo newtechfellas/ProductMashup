@@ -20,15 +20,9 @@
 	<div id="page-body" role="main">
 		<h1>Search for products</h1>
 		<g:form action="search">
-			<g:each in="${productTypes}" var="productType">
-				<g:checkBox name="${productType}" />
-				<label for="${productType}">
-					${productType}
-				</label>
-			</g:each>
 			<fieldset class="form">
 				<div>
-					<g:textField size="60" name="searchQuery"
+					<g:textField size="120" name="searchQuery"
 						value="Enter Your Search Criteria" />
 					<g:submitButton style="float:right" name="Search" />
 				</div>

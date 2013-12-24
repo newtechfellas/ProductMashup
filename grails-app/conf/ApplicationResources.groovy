@@ -5,4 +5,7 @@ modules = {
 	searchIndex {
 		resource url: 'css/index.css'
 	}
+	searchResults {
+		resource url: 'css/searchResults.css'
+	}
 }

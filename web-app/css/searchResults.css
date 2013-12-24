@@ -1,0 +1,47 @@
+div.searchResultDiv {
+	background-color: #E5EECC;
+	background-image: linear-gradient(#FFFFFF, #E5EECC 100px);
+	border: 1px solid #D4D4D4;
+	color: #000000;
+	margin: 15px;
+	padding: 5px;
+	width: auto;
+	overflow: auto;
+}
+
+span.productName {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 25px;
+	font-weight: normal;
+	line-height: 1.5;
+	margin: 0;
+	padding: 0 0 15px;
+}
+
+div.productDetails {
+	float: right;
+	width: 70%;
+}
+
+div.productImage {
+	float: left;
+}
+
+span.price {
+	font-size: 15px;
+	font-weight: bold;
+	line-height: 1.5;
+	display: block;
+}
+div.searchFilters {
+	float:left;
+	border : 1px solid #D4D4D4;
+}
+div.searchResults {
+	float:right;
+}
+div.resultsContainer{
+}
+div#appPage {
+	display: inline
+}

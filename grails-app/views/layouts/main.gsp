@@ -25,11 +25,15 @@
 		</style>
 	</head>
 	<body>
+		<div id="main">
 		<div id="grailsLogo" role="banner"><img src="${resource(dir: 'images', file: 'SearchIcon.png')}" alt="SearchYourProducts"/><span class="logoText">Comparison made easy</span></div>
+		<div id="appPage">
 		<g:layoutBody/>
+		</div>
 		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		<g:javascript library="application"/>
 		<r:layoutResources />
+		</div>
 	</body>
 </html>
