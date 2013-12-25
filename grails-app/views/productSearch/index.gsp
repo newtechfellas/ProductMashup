@@ -22,11 +22,11 @@
 		<g:form action="search">
 			<fieldset class="form">
 				<div>
-					<g:textField size="120" name="searchQuery"
-						value="Enter Your Search Criteria" />
+					<g:textField size="100" name="searchQuery"
+						value="laptop" />
 					<g:submitButton style="float:right" name="Search" />
 				</div>
-				<g:checkBox name="bestBuy" />
+				<g:checkBox name="bestBuy" checked="true"/>
 				<label for="bestBuy">BestBuy</label>
 				<g:checkBox name="amazon" />
 				<label for="amazon">Amazon</label>

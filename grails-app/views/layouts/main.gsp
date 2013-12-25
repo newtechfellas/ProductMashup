@@ -23,17 +23,21 @@
 			color:#48802C;
 		}
 		</style>
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	</head>
 	<body>
-		<div id="main">
-		<div id="grailsLogo" role="banner"><img src="${resource(dir: 'images', file: 'SearchIcon.png')}" alt="SearchYourProducts"/><span class="logoText">Comparison made easy</span></div>
-		<div id="appPage">
-		<g:layoutBody/>
-		</div>
-		<div class="footer" role="contentinfo"></div>
-		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
-		<g:javascript library="application"/>
-		<r:layoutResources />
-		</div>
+        <div class="main">
+            <div id="grailsLogo" role="banner">
+                   <img src="${resource(dir: 'images', file: 'SearchIcon.png')}" alt="SearchYourProducts"/>
+                    <span class="logoText">Comparison made easy</span>
+            </div>
+            <div class="appPageBody">
+            <g:layoutBody/>
+            </div>
+            <div class="footer" role="contentinfo">Copyright Newtechfellas 2013</div>
+            <g:javascript library="application"/>
+            <r:layoutResources />
+        </div>
 	</body>
 </html>

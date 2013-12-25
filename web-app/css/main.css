@@ -40,6 +40,7 @@ body {
 	background: #ffffff;
 	min-height: 100%;
 	color: #333333;
+	width:90%;
 	margin: 0 auto;
 	overflow-x: hidden; /* prevents box-shadow causing a horizontal scrollbar in firefox when viewport < 960px wide */
 	   -moz-box-shadow: 0 0 0.3em #255b17;
@@ -111,6 +112,7 @@ img {
 	background: #abbf78;	
 	color: #000;
 	clear: both;
+	text-align: center;
 	font-size: 0.8em;
 	margin-top: 1.5em;
 	padding: 1em;
@@ -597,4 +599,9 @@ a.skip {
 
 #main {
 	height:100%;
+}
+
+div.appPageBody {
+    min-height: 500px;
+
 }
