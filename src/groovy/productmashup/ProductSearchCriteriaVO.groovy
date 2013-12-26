@@ -1,8 +1,6 @@
 package productmashup
 
-import grails.validation.Validateable;
 
-@Validateable
 class ProductSearchCriteriaVO {
 	String searchQuery
 	boolean bestBuy
@@ -10,4 +8,5 @@ class ProductSearchCriteriaVO {
 	boolean amazon
 	String sortField
 	String sortOrder
+	List manufacturers
 }

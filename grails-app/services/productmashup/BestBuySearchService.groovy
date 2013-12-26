@@ -74,8 +74,10 @@ class BestBuySearchService {
             productSearchCriteriaVO.manufacturers.each {
                 Map map ->
                     map.each { key, val ->
-                        if (val == 'on')
-                            manufacturerTokens << key
+                        if (val == 'on') {
+							//BestBuy has weird name for Apple. It uses registered trade mark symbol as well in the name
+                            manufacturerTokens << ( key ==~ /apple/  ? 'Apple*' : key )
+                        }
                     }
             }
         }

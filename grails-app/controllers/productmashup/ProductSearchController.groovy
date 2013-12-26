@@ -17,7 +17,6 @@ class ProductSearchController {
 
     //root search API which delegates to service.
     def search(ProductSearchCriteriaVO productSearchCriteriaVO) {
-		println "search called"
         def searchResults = productSearchService.searchProducts(productSearchCriteriaVO)?:[:]
         render(view:"searchResults" , model: [ "searchResults": searchResults, "productSearchCriteriaVO":productSearchCriteriaVO ])
     }
