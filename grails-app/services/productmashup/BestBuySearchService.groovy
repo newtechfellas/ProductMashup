@@ -1,10 +1,12 @@
 package productmashup
+import net.sf.ehcache.Ehcache
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory;
 
 import groovy.json.JsonSlurper
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder;
+import static Util.*
 
 /**
  * Encapsulates Bestbuy search functionality.
@@ -13,8 +15,7 @@ import groovyx.net.http.URIBuilder;
  */
 class BestBuySearchService {
 	Logger logger = LoggerFactory.getLogger(BestBuySearchService.class)
-    //only for test phase to avoid hits to vendor site, Not for PROD.
-    Map cache = [:]
+    Ehcache productSearchCache //Cache bean injected by grails
     def interestedDataFieldsInResponse = "name,image,largeImage,mediumImage,productTemplate,modelNumber,shortDescription,url,regularPrice,salePrice,onSale,freeShipping,onlineAvailability,shippingCost,longDescription"
     def bbyOpenQueryPrefix = 'http://api.remix.bestbuy.com/v1/products';
 
@@ -93,9 +94,13 @@ class BestBuySearchService {
 		}
 	}
 	def getBbyData(def uri) {
-		if ( cache[uri] ) {
+		ProductSearchMetricsContainer metricsContainer = metricsContainer()
+		metricsContainer.addBestBuyRestUriMetric(uri)
+		def cachedData = productSearchCache.get(uri)
+		if ( cachedData?.getObjectValue()) {
+			metricsContainer.addIsCachedMetric(true)
 			logger.debug("returning cached data for $uri")
-			return cache[uri]
+			return cachedData.getObjectValue()
 		}
 		logger.debug "BbyOpen query=$uri"
 		//Call BestBuy API
@@ -120,11 +125,14 @@ class BestBuySearchService {
 			data = products
 			return it
 		}
-		cache[uri] = bestBuySearchResultsVO
+		productSearchCache.put(new net.sf.ehcache.Element(uri, bestBuySearchResultsVO))
 		return bestBuySearchResultsVO
 	}
 
 	Map searchProducts(ProductSearchCriteriaVO productSearchCriteriaVO) {
+		ProductSearchMetricsContainer metricsContainer = metricsContainer()
+		metricsContainer.addSearchStringMetric(productSearchCriteriaVO.searchQuery)
+		
 		def bestBuySearchResultsVO = getBbyData(constructRestURI(productSearchCriteriaVO))
 		logger.debug "bbyData size="+bestBuySearchResultsVO.data?.size()
 		//also update the manufacturers list in search criteria
