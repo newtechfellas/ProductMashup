@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 </head>
 <body>
+<!-- Ugly copy paste from index.gsp. Need to work on better layout which is template based so that application pages
+ need not worry about styling and layouts.
+ As of now, concentrating on the content rather than layout
+!-->
+
 <div id="status" role="complementary">
     <g:form controller="productSearch" action="search">
         <h1>Narrow your search results</h1>
@@ -14,8 +19,10 @@
             <h3>Manufacturer</h3>
             <div id="manufacturers" class="manufacturerList">
                 <g:each in="${productSearchCriteriaVO.manufacturers}" var="manufacturer" status="i">
-                    <label ><input type="checkbox"
-                           name="manufacturers[${i}].${manufacturer}"/> ${manufacturer}</label>
+                    <label >
+                        <g:textField name="manufacturers[${i}].name" hidden="hidden" value="${manufacturer.name}"></g:textField>
+                        <g:checkBox name="manufacturers[${i}].isSelected"  value="${manufacturer.isSelected}" checked="${manufacturer.isSelected ?:false}"></g:checkBox>
+                        ${manufacturer.name}</label>
                 </g:each>
             </div>
 
@@ -40,8 +47,11 @@
     </g:form>
 </div>
 <div id="page-body">
-<g:each in="${searchResults.bbyData}" var="product">
-	<div class="searchResultDiv">
+    <g:if test="${searchResults?.bbyData?.data}">
+        <h3>Total search results: ${searchResults.bbyData.totalProducts}</h3>
+    </g:if>
+<g:each in="${searchResults.bbyData.data}" var="product">
+    <div class="searchResultDiv">
         <div class="productDetails">
             <span class="productName">${product.name}</span>
             <g:if test="${product.shortDescription}">
@@ -74,7 +84,7 @@
                 </g:elseif>
             </a>
         </div>
-	</div>
+    </div>
 </g:each>
 </div>
 <script>
@@ -86,3 +96,4 @@
 </script>
 </body>
 </html>
+

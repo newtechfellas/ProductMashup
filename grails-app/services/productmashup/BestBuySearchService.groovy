@@ -27,7 +27,7 @@ class BestBuySearchService {
 
         // at present hardcoded. This needs to be pulled from Database or properties file which should never be
         // exposed to version control (i.e github)
-        new File("c:\\temp\\bestbuykey.txt").text.trim()
+        new File("/Users/yuyutsu/bestbuykey.txt").text.trim()
 
         //TODO: implement a pool of API keys. One key might not be sufficient.
         //Use the keys in round-robin fashion to prevent reaching max limit.
@@ -59,83 +59,84 @@ class BestBuySearchService {
         attributesList.removeAll([null])
         attributesList.join('&')
     }
-
+	
+	// Refer to https://bbyopen.com/documentation/products-api/get-products-using-search
+	def searchAttribute(List searchWordTokens) {
+		"search in(${searchWordTokens.join(',')})"
+	}
     def queryParams() {
         def queryParamsList = []
         queryParamsList << 'format=json' << "apiKey=${getAPIKey()}" << "show=$interestedDataFieldsInResponse"
         queryParamsList.join('&')
     }
 
-    //returns manufacturer attribute if applicable
-    def manufacturerAttribute(ProductSearchCriteriaVO productSearchCriteriaVO, List searchWordTokens) {
-        def manufacturerTokens = []
+	//returns manufacturer attribute if applicable
+	def manufacturerAttribute(ProductSearchCriteriaVO productSearchCriteriaVO, List searchWordTokens) {
+		def manufacturerTokens = []
 
-        if (productSearchCriteriaVO.manufacturers) {
-            productSearchCriteriaVO.manufacturers.each {
-                Map map ->
-                    map.each { key, val ->
-                        if (val == 'on') {
-							//BestBuy has weird name for Apple. It uses registered trade mark symbol as well in the name
-                            manufacturerTokens << ( key ==~ /apple/  ? 'Apple*' : key )
-                        }
-                    }
-            }
-        }
-        else {
-                // compare the input tokens against the known list of manufacturers.
-               manufacturerTokens = searchWordTokens.findAll {
-                it in knownManufacturers
-            }
-        }
-        if (manufacturerTokens) {
-            "manufacturer in(${manufacturerTokens.join(',')})"
-        }
-    }
-
-    //returns category if applicable
-    def categoryAttribute(List searchWordTokens) {
-
-    }
-
-    //returns procuctTemplate (ex: Computer_Notebooks, Monitors) if applicable
-    def procuctTemplateAttribute(List searchWordTokens) {
-
-    }
-
-    // Refer to https://bbyopen.com/documentation/products-api/get-products-using-search
-    def searchAttribute(List searchWordTokens) {
-        "search in(${searchWordTokens.join(',')})"
-    }
-
-    def getBbyData(def uri) {
-        if ( cache[uri] ) {
-            logger.debug("returning cached data for $uri")
-            return cache[uri]
-        }
-        logger.debug "BbyOpen query=$uri"
+		if (productSearchCriteriaVO.manufacturers) {
+			productSearchCriteriaVO.manufacturers.each {
+				ManufacturerVO manufacturerVO ->
+					if (manufacturerVO.isSelected) {
+						//BestBuy has weird name for Apple. It uses registered trade mark symbol as well in the name
+						manufacturerTokens << (manufacturerVO.name ==~ /apple/ ? 'Apple*' : manufacturerVO.name)
+					}
+			}
+		} else {
+			// compare the input tokens against the known list of manufacturers.
+			manufacturerTokens = searchWordTokens.findAll {
+				it in knownManufacturers
+			}
+		}
+		if (manufacturerTokens) {
+			"manufacturer in(${manufacturerTokens.join(',')})"
+		}
+	}
+	def getBbyData(def uri) {
+		if ( cache[uri] ) {
+			logger.debug("returning cached data for $uri")
+			return cache[uri]
+		}
+		logger.debug "BbyOpen query=$uri"
 		//Call BestBuy API
-        RESTClient restClient = new RESTClient(uri)
-        def resp = restClient.get([:])
-		
+		RESTClient restClient = new RESTClient(uri)
+		def resp = restClient.get([:])
+
 		//Convert the response into Product objects. Response contains "data" field which is a map of fields
-		//All we need is products field from this data 
 		assert resp?.data?.products instanceof List
-		def data = resp?.data?.products.collect {
-            // Using the easy way to build object by passing a map so that groovy does the magic
-            // of populating the appropriate object properties
+		def products = resp?.data?.products.collect {
+			// Using the easy way to build object by passing a map so that groovy does the magic
+			// of populating the appropriate object properties
 			new Product(it)
 		}
-        cache[uri] = data
-        data
-    }
 
-    Map searchProducts(ProductSearchCriteriaVO productSearchCriteriaVO) {
-        def bbyData = getBbyData(constructRestURI(productSearchCriteriaVO))
-		logger.debug "bbyData size="+bbyData.size()
-        //also update the manufacturers list in search criteria
-        //TODO: hardcoded as of now. This list need to be pre-defined and loaded into singleton instance
-        productSearchCriteriaVO.manufacturers = []
-        productSearchCriteriaVO.manufacturers.addAll( ["acer", "apple", "asus", "chrome", "dell", "hp", "lenovo"] )
-		["bbyData":bbyData]
-    }
+
+		def bestBuySearchResultsVO = new BestBuySearchResultsVO().with {
+			totalPages = resp.data.totalPages
+			currentPage = resp.data.currentPage
+			totalProducts = resp.data.total
+			currentResultStartIndex = resp.data.from
+			currentResultEndIndex = resp.data.to
+			data = products
+			return it
+		}
+		cache[uri] = bestBuySearchResultsVO
+		return bestBuySearchResultsVO
+	}
+
+	Map searchProducts(ProductSearchCriteriaVO productSearchCriteriaVO) {
+		def bestBuySearchResultsVO = getBbyData(constructRestURI(productSearchCriteriaVO))
+		logger.debug "bbyData size="+bestBuySearchResultsVO.data?.size()
+		//also update the manufacturers list in search criteria
+		//TODO: hardcoded as of now. This list need to be pre-defined and loaded into singleton instance
+		if ( ! productSearchCriteriaVO.manufacturers ) {
+			productSearchCriteriaVO.manufacturers = []
+			productSearchCriteriaVO.manufacturers.addAll(  ["acer", "apple", "asus", "chrome", "dell", "hp", "lenovo"].collect{
+				new ManufacturerVO(name:it, isSelected: false)
+			})
+		}
+		["bbyData":bestBuySearchResultsVO]
+	}
+
+
 }
