@@ -1,8 +1,13 @@
 package productmashup
 import net.sf.ehcache.Ehcache
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory;
 
+import com.newtechfellas.mashup.service.IProductSearchService
+
+import grails.plugin.cache.Cacheable;
+import grails.util.Holders;
 import groovy.json.JsonSlurper
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder;
@@ -15,7 +20,7 @@ import static Util.*
  */
 class BestBuySearchService {
 	Logger logger = LoggerFactory.getLogger(BestBuySearchService.class)
-    Ehcache productSearchCache //Cache bean injected by grails
+//    Ehcache productSearchCache //Cache bean injected by grails
     def interestedDataFieldsInResponse = "name,image,largeImage,mediumImage,productTemplate,modelNumber,shortDescription,url,regularPrice,salePrice,onSale,freeShipping,onlineAvailability,shippingCost,longDescription"
     def bbyOpenQueryPrefix = 'http://api.remix.bestbuy.com/v1/products';
 
@@ -74,7 +79,7 @@ class BestBuySearchService {
 	//returns manufacturer attribute if applicable
 	def manufacturerAttribute(ProductSearchCriteriaVO productSearchCriteriaVO, List searchWordTokens) {
 		def manufacturerTokens = []
-
+		//If user selected any manufacturers, use them.
 		if (productSearchCriteriaVO.manufacturers) {
 			productSearchCriteriaVO.manufacturers.each {
 				ManufacturerVO manufacturerVO ->
@@ -84,24 +89,16 @@ class BestBuySearchService {
 					}
 			}
 		} else {
-			// compare the input tokens against the known list of manufacturers.
+			// otherwise compare the input search string tokens against the known list of manufacturers.
 			manufacturerTokens = searchWordTokens.findAll {
 				it in knownManufacturers
 			}
 		}
-		if (manufacturerTokens) {
-			"manufacturer in(${manufacturerTokens.join(',')})"
-		}
+		manufacturerTokens? "manufacturer in(${manufacturerTokens.join(',')})" : null
 	}
-	def getBbyData(def uri) {
-		ProductSearchMetricsContainer metricsContainer = metricsContainer()
-		metricsContainer.addBestBuyRestUriMetric(uri)
-		def cachedData = productSearchCache.get(uri)
-		if ( cachedData?.getObjectValue()) {
-			metricsContainer.addIsCachedMetric(true)
-			logger.debug("returning cached data for $uri")
-			return cachedData.getObjectValue()
-		}
+	//Using grails cache plugin to cache the data againt the Rest URI
+	@Cacheable(value="productSearchCache", key="#uri")
+	BestBuySearchResultsVO getBbyData(String uri) {
 		logger.debug "BbyOpen query=$uri"
 		//Call BestBuy API
 		RESTClient restClient = new RESTClient(uri)
@@ -125,26 +122,26 @@ class BestBuySearchService {
 			data = products
 			return it
 		}
-		productSearchCache.put(new net.sf.ehcache.Element(uri, bestBuySearchResultsVO))
 		return bestBuySearchResultsVO
 	}
-
+	//Get the proxied instance to invoke to take cache into effect
+	BestBuySearchService proxiedService() {
+		Holders.grailsApplication.mainContext.bestBuySearchService
+	}
+	
 	Map searchProducts(ProductSearchCriteriaVO productSearchCriteriaVO) {
 		ProductSearchMetricsContainer metricsContainer = metricsContainer()
 		metricsContainer.addSearchStringMetric(productSearchCriteriaVO.searchQuery)
 		
-		def bestBuySearchResultsVO = getBbyData(constructRestURI(productSearchCriteriaVO))
+		def bestBuySearchResultsVO = proxiedService().getBbyData(constructRestURI(productSearchCriteriaVO))
 		logger.debug "bbyData size="+bestBuySearchResultsVO.data?.size()
 		//also update the manufacturers list in search criteria
 		//TODO: hardcoded as of now. This list need to be pre-defined and loaded into singleton instance
 		if ( ! productSearchCriteriaVO.manufacturers ) {
-			productSearchCriteriaVO.manufacturers = []
-			productSearchCriteriaVO.manufacturers.addAll(  ["acer", "apple", "asus", "chrome", "dell", "hp", "lenovo"].collect{
+			productSearchCriteriaVO.manufacturers =   ["acer", "apple", "asus", "chrome", "dell", "hp", "lenovo"].collect{
 				new ManufacturerVO(name:it, isSelected: false)
-			})
+			}
 		}
 		["bbyData":bestBuySearchResultsVO]
 	}
-
-
 }

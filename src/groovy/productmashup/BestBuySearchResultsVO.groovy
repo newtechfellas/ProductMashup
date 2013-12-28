@@ -5,7 +5,7 @@ package productmashup
  * Date: 12/26/13.
  * Time: 9:36 AM
  */
-class BestBuySearchResultsVO {
+class BestBuySearchResultsVO implements Serializable {
 	List data
 	int totalProducts
 	int currentPage
